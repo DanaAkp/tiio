@@ -42,6 +42,7 @@ def max_first(arr):
     return ind_max
 
 
+# функция, которая выбирает для 2 игрока минимальный выигрыш первого игрока
 def min_second(arr):
     ind_min = list(arr).index(min(arr))
     return ind_min
@@ -80,6 +81,7 @@ def iter_method(arr: array, epsilon):
         v_aver = (v_max + v_min) / 2
         print(f'\n{k} -----------------------------------------')
         print(f'{i}-{list_b}\n{j}-{list_a}\n{v_min:.2f} - {v_max:.2f} - {v_aver}\nsub={sub}')
+    print(f'W = {v_aver}')
 
 
 # A = array([[3, 2, 0, 7], [-2, 5, 7, 3], [6, 4, 0, 6], [1, 8, -3, 2]])
