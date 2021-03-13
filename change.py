@@ -51,6 +51,8 @@ def min_second(arr):
 def iter_method(arr: array, epsilon):
     # region INIT
     k = 1
+    NA = [0]*len(arr)
+    NB = [0]*len(arr)
     i = 0
     m = arr[0][0]
     for ind in range(len(arr)):
@@ -58,8 +60,10 @@ def iter_method(arr: array, epsilon):
             i = ind
             m = max(arr[ind])
 
+    NA[i]+=1
     list_b = arr[i]
     j = min_second(list_b)
+    NB[j]+=1
     list_a = arr[:, j]
     v_min = min(list_b) / k
     v_max = max(list_a) / k
@@ -69,11 +73,13 @@ def iter_method(arr: array, epsilon):
     print(f'\n{k} -----------------------------------------')
     print(f'{i}-{list_b}\n{j}-{list_a}\n{v_min:.2f} - {v_max:.2f} - {v_aver:.2f}')
 
-    while sub > epsilon:
+    while k<20:#sub > epsilon: # непонятно когда надо останавливаться
         k += 1
         i = max_first(list_a)
+        NA[i]+=1
         list_b = list(map(lambda x: list_b[x] + arr[i][x], range(len(arr[i]))))
         j = min_second(list_b)
+        NB[j]+=1
         list_a = list(map(lambda x: list_a[x] + arr[:, j][x], range(len(arr[:, j]))))
         v_min = min(list_b) / k
         v_max = max(list_a) / k
@@ -81,6 +87,9 @@ def iter_method(arr: array, epsilon):
         v_aver = (v_max + v_min) / 2
         print(f'\n{k} -----------------------------------------')
         print(f'{i}-{list_b}\n{j}-{list_a}\n{v_min:.2f} - {v_max:.2f} - {v_aver}\nsub={sub}')
+    p = list(map(lambda x: x/k, NA))
+    q = list(map(lambda x: x/k, NB))
+    print(p, q)
     print(f'W = {v_aver}')
 
 
