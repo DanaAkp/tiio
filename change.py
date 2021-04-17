@@ -4,7 +4,8 @@ from numpy import array, min, max, transpose
 def check_saddle_point(arr: array):
     min_ = arr.min(axis=1)
     max_ = arr.max(axis=0)
-    return max if max(min_) == min(max_) else False
+    print(f'min Ai = {min_}\nmax Bi = {max_}\nmaxmin Ai = {max(min_)}\nminmax Bi = {min(max_)}')
+    return max(min_) if max(min_) == min(max_) else False
 
 
 def row(arr: array, mass):
@@ -52,7 +53,7 @@ def iter_method(arr: array, epsilon):
     # region INIT
     k = 1
     NA = [0]*len(arr)
-    NB = [0]*len(arr)
+    NB = [0]*len(arr[:, 0])
     i = 0
     m = arr[0][0]
     for ind in range(len(arr)):
@@ -70,10 +71,10 @@ def iter_method(arr: array, epsilon):
     v_aver = (v_max + v_min) / 2
     sub = 10
     # endregion
-    print(f'\n{k} -----------------------------------------')
-    print(f'{i}-{list_b}\n{j}-{list_a}\n{v_min:.2f} - {v_max:.2f} - {v_aver:.2f}')
+    print(f'\nk = {k} ')
+    print(f'i = {i}: {list_b}\nj = {j}: {list_a}\nV: {v_min:.2f} - {v_max:.2f} - {v_aver:.2f}')
 
-    while k<20:#sub > epsilon: # непонятно когда надо останавливаться
+    while sub > epsilon:
         k += 1
         i = max_first(list_a)
         NA[i]+=1
@@ -83,16 +84,30 @@ def iter_method(arr: array, epsilon):
         list_a = list(map(lambda x: list_a[x] + arr[:, j][x], range(len(arr[:, j]))))
         v_min = min(list_b) / k
         v_max = max(list_a) / k
-        sub = abs(((v_max + v_min) / 2) - v_aver)
+        sub = v_max - v_min
         v_aver = (v_max + v_min) / 2
-        print(f'\n{k} -----------------------------------------')
-        print(f'{i}-{list_b}\n{j}-{list_a}\n{v_min:.2f} - {v_max:.2f} - {v_aver}\nsub={sub}')
+        print(f'\nk = {k}')
+        print(f'i = {i}: {list_b}\nj = {j}: {list_a}\nV: {v_min:.2f} - {v_max:.2f} - {v_aver:.2f}\n')
+        print(v_min, v_max)
     p = list(map(lambda x: x/k, NA))
     q = list(map(lambda x: x/k, NB))
-    print(p, q)
-    print(f'W = {v_aver}')
+
+    print(f'\nP = {p}\nQ = {q}')
+    print(f'W = {v_aver}\nk = {k}')
 
 
 # A = array([[3, 2, 0, 7], [-2, 5, 7, 3], [6, 4, 0, 6], [1, 8, -3, 2]])
-A = array([[6, 1, 4], [2, 4, 2], [4, 3, 5]])
-iter_method(A, 0.01)
+# A = array([[6, 1, 4], [2, 4, 2], [4, 3, 5]])
+A = array([[8, 2, 4], [4, 5, 6], [1, 7, 3]])
+# A = array([[0.6, 0.1, 0.9], [0.2, 0.7, 0.4], [0.5, 0.1, 0.5]])
+# A = array([[10, 1], [2, 7]])
+# # B = array([[6, 3], [-5, 11]])
+# # AB = array([[16, -4], [8, 18]])
+# # # print(f'saddle point = {check_saddle_point(A)}')
+# # iter_method(A, 0.01)
+# # iter_method(B, 0.01)
+# # iter_method(AB, 0.01)
+
+# A = array([[5, 4, 2, 1], [3, 9, 5,11]])
+# print(check_saddle_point(A))
+iter_method(A, 0.004)
