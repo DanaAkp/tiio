@@ -8,6 +8,7 @@ class Game:
         self.risk_matrix = self.get_matrix_risk()
         #  матрица экспериментов Х
         self.experience_matrix = experience_matrix
+        self.loss_function = self.get_loss_function()
 
     #  цена эксперимента
     def price_experience(self, q: list):
@@ -24,21 +25,32 @@ class Game:
         return a__-a_
 
     # функция решений d(x)
-    def function_decision(self):
+    def get_decision_function(self):
         base = len(self.payoff_matrix)
-        d = []
+        decision_function = []
         dimension = pow(len(self.payoff_matrix), len(self.payoff_matrix[0]))
         for i in range(dimension):
-                buffer = []
-                num = i
-                while num > 0:
-                    buffer.append(num % base)
-                    num //= base
-                while len(buffer) != 3:
-                    buffer.append(0)
-                buffer.reverse()
-                d.append(buffer)
-        return d
+                buf = []
+                while i > 0:
+                    buf.append(i % base)
+                    i //= base
+                while len(buf) != 3:
+                    buf.append(0)
+                buf.reverse()
+                decision_function.append(buf)
+        return decision_function
+
+    #  функция риска R(d(x))
+    def get_risk_function(self):
+        d = self.get_decision_function()
+        risk_function = []
+        for i in range(len(d)):
+            buf = []
+            for j in range(len(d[i])):
+                buf.append(sum(list(map(lambda k: self.loss_function[int(d[i][k])][j] * self.experience_matrix[k][j],
+                                        range(len(d[i]))))))
+            risk_function.append(buf)
+        return risk_function
 
     #  критерий крайнего пессимизма для матрицы выигрышей
     def extreme_pessimism_criterion_payoff(self):
