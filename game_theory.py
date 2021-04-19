@@ -10,18 +10,43 @@ class Game:
         self.experience_matrix = experience_matrix
         self.loss_function = self.get_loss_function()
 
-    #  цена игры без эксперимента
-    def price_without_experience(self, q: list):
+    def get_a_(self, q):
         a_i = list(map(lambda x:
                        sum(list(map(
                            lambda y: self.payoff_matrix[x][y] * q[y],
                            range(len(self.payoff_matrix[x]))))),
                        range(len(self.payoff_matrix))))
         #  а с домиком
-        a_ = max(a_i)
-        B_j = list(map(lambda x: max(x), self.payoff_matrix))
+        return max(a_i)
+
+    #  цена игры без эксперимента
+    def price_without_experience(self, q: list):
+        a_ = self.get_a_(q)
+        B_j = list(map(lambda x: max(self.get_column(self.payoff_matrix, x)), range(len(self.payoff_matrix[0]))))
         #  а с тильдой
         a__ = sum(list(map(lambda x: B_j[x]*q[x], range(len(B_j)))))
+        return a__-a_
+
+    def price_with_experience(self, q: list):
+        a_ = self.get_a_(q)
+        p_xl = list(map(lambda x: sum(list(map(lambda y: x[y]*q[y], range(len(x))))), self.experience_matrix))
+        q_il = []
+        for j in range(len(self.experience_matrix[0])):
+            buf = []
+            for l in range(len(self.experience_matrix)):
+                buf.append((q[j] * self.experience_matrix[l][j]) / p_xl[l])
+            q_il.append(buf)
+        a_l = []
+        for l in range(len(q_il[0])):
+            buf = []
+            for i in range(len(self.payoff_matrix)):
+                buf_sum = []
+                for j in range(len(self.payoff_matrix[i])):
+                    buf_sum.append(self.payoff_matrix[i][j]*q_il[j][l])
+                buf.append(sum(buf_sum))
+            a_l.append(buf)
+        a_l = list(map(lambda x: max(x), a_l))
+        a__ = sum(list(map(lambda x: a_l[x]*p_xl[x], range(len(a_l)))))
         return a__-a_
 
     def get_min_value_from_baiesian_function(self, p):
@@ -168,11 +193,12 @@ class Game:
         n = len(self.risk_matrix[0])
         return self.test_bayes_risk_matrix([1/n]*n)
 
+    # цена игры в смешанных стратегиях
     def get_game_price(self, epsilon, arr):
         # region INIT
         k = 1
-        # NA = [0] * len(self.payoff_matrix)
-        # NB = [0] * len(self.payoff_matrix[:, 0])
+        NA = [0] * len(arr)
+        NB = [0] * len(arr[0])
         i = 0
         m = arr[0][0]
         for ind in range(len(arr)):
@@ -180,10 +206,10 @@ class Game:
                 i = ind
                 m = max(arr[ind])
 
-        # NA[i] += 1
+        NA[i] += 1
         list_b = arr[i]
         j = self.min_second(list_b)
-        # NB[j] += 1
+        NB[j] += 1
         list_a = self.get_column(arr, j)
         v_min = min(list_b) / k
         v_max = max(list_a) / k
@@ -194,18 +220,18 @@ class Game:
         while sub > epsilon:
             k += 1
             i = self.max_first(list_a)
-            # NA[i] += 1
+            NA[i] += 1
             list_b = list(map(lambda x: list_b[x] + arr[i][x], range(len(arr[i]))))
             j = self.min_second(list_b)
-            # NB[j] += 1
+            NB[j] += 1
             list_a = list(map(lambda x: list_a[x] + self.get_column(arr, j)[x], range(len(self.get_column(arr, j)))))
             v_min = min(list_b) / k
             v_max = max(list_a) / k
             sub = v_max - v_min
             v_aver = (v_max + v_min) / 2
-        # p = list(map(lambda x: x / k, NA))
-        # q = list(map(lambda x: x / k, NB))
-        return v_aver
+        p = list(map(lambda x: x / k, NA))
+        q = list(map(lambda x: x / k, NB))
+        return v_aver, p, q
 
     def check_saddle_point(self):
         max_ = list(map(lambda x: max(self.get_column(self.payoff_matrix, x)), range(len(self.payoff_matrix[0]))))
