@@ -233,6 +233,20 @@ class Game:
         q = list(map(lambda x: x / k, NB))
         return v_aver, p, q
 
+    # получение решения в смешанных стратегиях
+    def get_decision_in_mixed_strategy(self, y: list):
+        d = self.get_decision_function()
+        buf = []
+        for i in range(len(self.experience_matrix)):
+            a = [0]*len(self.experience_matrix)
+            for j in range(len(d)):
+                if y[j]>0:
+                    a[d[j][i]] += y[j]
+
+            buf.append(a)
+        return buf
+
+
     def check_saddle_point(self):
         max_ = list(map(lambda x: max(self.get_column(self.payoff_matrix, x)), range(len(self.payoff_matrix[0]))))
         min_ = list(map(lambda x: min(x), self.payoff_matrix))
