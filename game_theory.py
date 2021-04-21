@@ -24,12 +24,12 @@ class Game:
         a_ = self.get_a_(q)
         B_j = list(map(lambda x: max(self.get_column(self.payoff_matrix, x)), range(len(self.payoff_matrix[0]))))
         #  а с тильдой
-        a__ = sum(list(map(lambda x: B_j[x]*q[x], range(len(B_j)))))
-        return a__-a_
+        a__ = sum(list(map(lambda x: B_j[x] * q[x], range(len(B_j)))))
+        return a__ - a_
 
     def price_with_experience(self, q: list):
         a_ = self.get_a_(q)
-        p_xl = list(map(lambda x: sum(list(map(lambda y: x[y]*q[y], range(len(x))))), self.experience_matrix))
+        p_xl = list(map(lambda x: sum(list(map(lambda y: x[y] * q[y], range(len(x))))), self.experience_matrix))
         q_il = []
         for j in range(len(self.experience_matrix[0])):
             buf = []
@@ -42,16 +42,16 @@ class Game:
             for i in range(len(self.payoff_matrix)):
                 buf_sum = []
                 for j in range(len(self.payoff_matrix[i])):
-                    buf_sum.append(self.payoff_matrix[i][j]*q_il[j][l])
+                    buf_sum.append(self.payoff_matrix[i][j] * q_il[j][l])
                 buf.append(sum(buf_sum))
             a_l.append(buf)
         a_l = list(map(lambda x: max(x), a_l))
-        a__ = sum(list(map(lambda x: a_l[x]*p_xl[x], range(len(a_l)))))
-        return a__-a_
+        a__ = sum(list(map(lambda x: a_l[x] * p_xl[x], range(len(a_l)))))
+        return a__ - a_
 
     def get_min_value_from_baiesian_function(self, p):
         risk_function = self.get_risk_function()
-        list_max = list(map(lambda x: max(list(map(lambda y: x[y]*p[y], range(len(x))))), risk_function))
+        list_max = list(map(lambda x: max(list(map(lambda y: x[y] * p[y], range(len(x))))), risk_function))
         return self.get_min_index_from_list(list_max)
 
     # функция решений d(x)
@@ -60,14 +60,14 @@ class Game:
         decision_function = []
         dimension = pow(len(self.payoff_matrix), len(self.payoff_matrix[0]))
         for i in range(dimension):
-                buf = []
-                while i > 0:
-                    buf.append(i % base)
-                    i //= base
-                while len(buf) != 3:
-                    buf.append(0)
-                buf.reverse()
-                decision_function.append(buf)
+            buf = []
+            while i > 0:
+                buf.append(i % base)
+                i //= base
+            while len(buf) != 3:
+                buf.append(0)
+            buf.reverse()
+            decision_function.append(buf)
         return decision_function
 
     #  функция риска R(d(x), Tetta)
@@ -91,11 +91,11 @@ class Game:
                 if max_ < self.payoff_matrix[i][j]:
                     max_ind = i
                     max_ = self.payoff_matrix[i][j]
-        return max_, max_ind + 1
+        return max_, max_ind
 
     #  получение фукнции потерь L
     def get_loss_function(self):
-        return list(map(lambda x:list(map(lambda y: (-1)*y, x)), self.payoff_matrix))
+        return list(map(lambda x: list(map(lambda y: (-1) * y, x)), self.payoff_matrix))
 
     #  критерий крайнего пессимизма для матрицы риска
     def extreme_pessimism_criterion_risk(self):
@@ -106,7 +106,7 @@ class Game:
                 if min_ > self.risk_matrix[i][j]:
                     min_ind = i
                     min_ = self.risk_matrix[i][j]
-        return min_, min_ind + 1
+        return min_, min_ind
 
     #  критерий Вальда
     def test_wald(self):
@@ -149,7 +149,7 @@ class Game:
             if max_ < from_list[i]:
                 max_ind = i
                 max_ = from_list[i]
-        return max_, max_ind+1
+        return max_, max_ind
 
     @staticmethod
     def get_min_index_from_list(from_list: list):
@@ -159,7 +159,7 @@ class Game:
             if min_ > from_list[i]:
                 min_ind = i
                 min_ = from_list[i]
-        return min_, min_ind+1
+        return min_, min_ind
 
     #  критерий Гурвица для матрицы выигрышей
     def test_hurwitz_payoff_matrix(self, lambda_: float):
@@ -168,7 +168,7 @@ class Game:
 
     #  критерий Гурвица для матрицы риска
     def test_hurwitz_risk_matrix(self, lambda_: float):
-        list_min = list(map(lambda x:(lambda_ * max(x) + (1 - lambda_) * min(x)), self.risk_matrix))
+        list_min = list(map(lambda x: (lambda_ * max(x) + (1 - lambda_) * min(x)), self.risk_matrix))
         return self.get_min_index_from_list(list_min)
 
     #  получение матрицы риска из матрицы выигрышей
@@ -180,18 +180,18 @@ class Game:
         # return np.transpose(list_)
         # # max_j = self.payoff_matrix.max(axis=0)
         return [[max(self.get_column(self.payoff_matrix, j)) - self.payoff_matrix[i][j]
-        for j in range(len(self.payoff_matrix[i]))]
-                      for i in range(len(self.payoff_matrix))]
+                 for j in range(len(self.payoff_matrix[i]))]
+                for i in range(len(self.payoff_matrix))]
 
     #  критерий Байеса для матрицы выигрышей с одинаковыми вероятностями
     def test_bayes_payoff_matrix_with_equal_probabilities(self):
         n = len(self.payoff_matrix[0])
-        return self.test_bayes_payoff_matrix([1/n]*n)
+        return self.test_bayes_payoff_matrix([1 / n] * n)
 
     #  критерий Байеса для матрицы риска с одинаковыми вероятностями
     def test_bayes_risk_matrix_with_equal_probabilities(self):
         n = len(self.risk_matrix[0])
-        return self.test_bayes_risk_matrix([1/n]*n)
+        return self.test_bayes_risk_matrix([1 / n] * n)
 
     # цена игры в смешанных стратегиях
     def get_game_price(self, epsilon, arr):
@@ -238,15 +238,15 @@ class Game:
         d = self.get_decision_function()
         buf = []
         for i in range(len(self.experience_matrix)):
-            a = [0]*len(self.experience_matrix)
+            a = [0] * len(self.experience_matrix)
             for j in range(len(d)):
-                if y[j]>0:
+                if y[j] > 0:
                     a[d[j][i]] += y[j]
 
             buf.append(a)
         return buf
 
-
+    # проверка седловой точки
     def check_saddle_point(self):
         max_ = list(map(lambda x: max(self.get_column(self.payoff_matrix, x)), range(len(self.payoff_matrix[0]))))
         min_ = list(map(lambda x: min(x), self.payoff_matrix))
@@ -281,6 +281,3 @@ class Game:
         print('Критерий Байеса для R', self.test_bayes_risk_matrix_with_equal_probabilities())
         print('Критерий Гурвица для А', self.test_hurwitz_payoff_matrix(lambda_))
         print('Критерий Гурвица для R', self.test_hurwitz_risk_matrix(lambda_))
-
-
-
