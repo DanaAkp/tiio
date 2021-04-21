@@ -236,14 +236,16 @@ class Game:
     # получение решения в смешанных стратегиях
     def get_decision_in_mixed_strategy(self, y: list):
         d = self.get_decision_function()
-        buf = []
+        buf = {}
+        print(buf)
         for i in range(len(self.experience_matrix)):
             a = [0] * len(self.experience_matrix)
             for j in range(len(d)):
                 if y[j] > 0:
+                    buf.setdefault(j)
                     a[d[j][i]] += y[j]
-
-            buf.append(a)
+            list_key = list(buf)
+            buf[list_key[i]] = a
         return buf
 
     # проверка седловой точки
