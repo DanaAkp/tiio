@@ -237,13 +237,14 @@ class Game:
     def get_decision_in_mixed_strategy(self, y: list):
         d = self.get_decision_function()
         buf = {}
-        print(buf)
+        y = dict((key, value) for key,value in dict(map(lambda x: (x, y[x]) , range(len(y)))).items() if value != 0)
+        y = dict(sorted(y.items(), key=lambda item: item[1], reverse=True)[:len(self.experience_matrix)])
+
         for i in range(len(self.experience_matrix)):
             a = [0] * len(self.experience_matrix)
-            for j in range(len(d)):
-                if y[j] > 0:
-                    buf.setdefault(j)
-                    a[d[j][i]] += y[j]
+            for j in y:
+                buf.setdefault(j)
+                a[d[j][i]] += y[j]
             list_key = list(buf)
             buf[list_key[i]] = a
         return buf
