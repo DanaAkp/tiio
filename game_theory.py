@@ -64,7 +64,7 @@ class Game:
             while i > 0:
                 buf.append(i % base)
                 i //= base
-            while len(buf) != 3:
+            while len(buf) != base:
                 buf.append(0)
             buf.reverse()
             decision_function.append(buf)
@@ -93,7 +93,7 @@ class Game:
                     max_ = self.payoff_matrix[i][j]
         return max_, max_ind
 
-    #  получение фукнции потерь L
+    #  получение функции потерь L
     def get_loss_function(self):
         return list(map(lambda x: list(map(lambda y: (-1) * y, x)), self.payoff_matrix))
 
@@ -271,7 +271,7 @@ class Game:
         print(description)
         for i in matrix:
             for j in i:
-                print(j, end='\t')
+                print(round(j,2), end='\t')
             print()
 
     def print_criteria_values(self, lambda_):
