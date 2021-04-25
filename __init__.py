@@ -30,11 +30,9 @@ for i in range(len(significant_probabilities[2])):
 mixed_strategy_solution = game.get_decision_in_mixed_strategy(significant_probabilities[2])
 print(mixed_strategy_solution)
 print('Решение в смешанных стратегиях:')
-c = 0
 for i in mixed_strategy_solution:
-    print(f'X{c} =', end=' ')
+    print(f'X{list(mixed_strategy_solution.keys()).index(i)} =', end=' ')
     val = mixed_strategy_solution[i]
     for j in range(len(val)):
-        print(f'a{d[c][j]}*{val[j]}', end='+')
-    c += 1
+        print(f'a{j}*{round(val[j], 3)}', end='+')
     print()
